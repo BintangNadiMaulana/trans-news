@@ -10,7 +10,7 @@ import Observation
 import UserNotifications
 import UIKit
 
-struct AppNotification: Identifiable {
+struct AppNotification: Identifiable, Sendable {
     let id: String
     let title: String
     let message: String
@@ -97,10 +97,10 @@ final class NotificationService {
     
     func scheduleCategoryNotification(category: String, title: String, body: String) {
         guard notificationsEnabled else { return }
-        
+
         let content = UNMutableNotificationContent()
-        content.title = category
-        content.body = title
+        content.title = title
+        content.body = body
         content.sound = .default
         content.userInfo = ["category": category]
         

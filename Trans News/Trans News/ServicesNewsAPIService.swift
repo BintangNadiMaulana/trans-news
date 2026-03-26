@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum NewsAPIError: LocalizedError {
+enum NewsAPIError: LocalizedError, Sendable {
     case invalidURL
     case invalidResponse
     case emptyData
@@ -32,7 +32,7 @@ struct NewsAPIService: Sendable {
     func fetchNews(category: NewsCategory = .general, country: String = "id") async throws -> [NewsArticleDTO] {
         let locale = NewsLocale(country: country)
         let urlString = feedURL(for: category, locale: locale)
-        return try await fetchRSS(from: urlString, fallbackCategory: category.rawValue)
+        return try await fetchRSS(from: urlString)
     }
 
     func searchNews(query: String, country: String = "id") async throws -> [NewsArticleDTO] {
@@ -45,7 +45,7 @@ struct NewsAPIService: Sendable {
         }
 
         let urlString = "https://news.google.com/rss/search?q=\(encodedQuery)&hl=\(locale.languageCode)&gl=\(locale.regionCode)&ceid=\(locale.regionCode):\(locale.languageCode)"
-        return try await fetchRSS(from: urlString, fallbackCategory: NewsCategory.general.rawValue)
+        return try await fetchRSS(from: urlString)
     }
 
     private func feedURL(for category: NewsCategory, locale: NewsLocale) -> String {
@@ -58,7 +58,7 @@ struct NewsAPIService: Sendable {
         return "\(base)/headlines/section/topic/\(topic)?hl=\(locale.languageCode)&gl=\(locale.regionCode)&ceid=\(locale.regionCode):\(locale.languageCode)"
     }
 
-    private func fetchRSS(from urlString: String, fallbackCategory: String) async throws -> [NewsArticleDTO] {
+    private func fetchRSS(from urlString: String) async throws -> [NewsArticleDTO] {
         guard let url = URL(string: urlString) else {
             throw NewsAPIError.invalidURL
         }
@@ -68,7 +68,7 @@ struct NewsAPIService: Sendable {
             throw NewsAPIError.invalidResponse
         }
 
-        let parser = GoogleNewsRSSParser(defaultCategory: fallbackCategory)
+        let parser = GoogleNewsRSSParser()
         let articles = parser.parse(data: data)
 
         guard !articles.isEmpty else {
@@ -79,7 +79,7 @@ struct NewsAPIService: Sendable {
     }
 }
 
-private struct NewsLocale {
+private struct NewsLocale: Sendable {
     let languageCode: String
     let regionCode: String
 
@@ -95,35 +95,14 @@ private struct NewsLocale {
     }
 }
 
-private extension NewsCategory {
-    var googleNewsTopic: String? {
-        switch self {
-        case .general:
-            return nil
-        case .business:
-            return "BUSINESS"
-        case .technology:
-            return "TECHNOLOGY"
-        case .entertainment:
-            return "ENTERTAINMENT"
-        case .health:
-            return "HEALTH"
-        case .science:
-            return "SCIENCE"
-        case .sports:
-            return "SPORTS"
-        }
-    }
-}
-
-private final class GoogleNewsRSSParser: NSObject, XMLParserDelegate {
+private final class GoogleNewsRSSParser: NSObject, XMLParserDelegate, @unchecked Sendable {
     private var articles: [NewsArticleDTO] = []
     private var currentItem: RSSItem?
     private var currentElement = ""
     private var currentValue = ""
 
-    init(defaultCategory: String) {
-        _ = defaultCategory
+    override init() {
+        super.init()
     }
 
     func parse(data: Data) -> [NewsArticleDTO] {
@@ -222,7 +201,7 @@ private final class GoogleNewsRSSParser: NSObject, XMLParserDelegate {
     }
 }
 
-private struct RSSItem {
+private struct RSSItem: Sendable {
     var title = ""
     var link = ""
     var pubDate = ""

@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import SwiftData
 
 struct HomeView: View {
     @Bindable var viewModel: NewsViewModel
@@ -14,7 +13,6 @@ struct HomeView: View {
     @State private var showSearch = false
     @State private var showNotifications = false
     @State private var selectedQuickCategory: NewsCategory = .general
-    @State private var showAllCategories = false
     @State private var notificationService = NotificationService.shared
     
     var body: some View {
@@ -296,7 +294,7 @@ struct HomeView: View {
             .padding(.horizontal)
             
             LazyVStack(spacing: 12) {
-                ForEach(Array(viewModel.articles.prefix(10).enumerated()), id: \.element.id) { index, article in
+                ForEach(Array(viewModel.articles.prefix(10).enumerated()), id: \.element.id) { _, article in
                     NavigationLink(destination: NewsDetailView(article: article, viewModel: viewModel)) {
                         NewsListCard(article: article)
                             .transition(.asymmetric(

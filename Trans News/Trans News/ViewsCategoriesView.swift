@@ -6,12 +6,10 @@
 //
 
 import SwiftUI
-import SwiftData
 
 struct CategoriesView: View {
     var viewModel: NewsViewModel
-    @State private var animateCards = false
-    
+
     let columns = [
         GridItem(.flexible(), spacing: 14),
         GridItem(.flexible(), spacing: 14)
