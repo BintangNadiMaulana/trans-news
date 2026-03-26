@@ -9,13 +9,13 @@ import Foundation
 import SwiftData
 
 // MARK: - API Response Models
-struct NewsAPIResponse: Codable {
+struct NewsAPIResponse: Codable, Sendable {
     let status: String
     let totalResults: Int
     let articles: [NewsArticleDTO]
 }
 
-struct NewsArticleDTO: Codable {
+struct NewsArticleDTO: Codable, Sendable {
     let source: NewsSource
     let author: String?
     let title: String
@@ -26,14 +26,14 @@ struct NewsArticleDTO: Codable {
     let content: String?
 }
 
-struct NewsSource: Codable {
+struct NewsSource: Codable, Sendable {
     let id: String?
     let name: String
 }
 
 // MARK: - App Models
 @Model
-final class NewsArticle {
+final class NewsArticle: @unchecked Sendable {
     @Attribute(.unique) var id: String
     var title: String
     var articleDescription: String?
@@ -46,7 +46,7 @@ final class NewsArticle {
     var category: String
     var isBookmarked: Bool
     var isRead: Bool
-    
+
     init(
         id: String = UUID().uuidString,
         title: String,
@@ -101,7 +101,7 @@ final class NewsArticle {
 }
 
 // MARK: - News Category
-enum NewsCategory: String, CaseIterable, Identifiable {
+enum NewsCategory: String, CaseIterable, Identifiable, Sendable {
     case general = "general"
     case business = "business"
     case technology = "technology"
@@ -133,6 +133,18 @@ enum NewsCategory: String, CaseIterable, Identifiable {
         case .health: return "cross.case"
         case .science: return "atom"
         case .sports: return "sportscourt"
+        }
+    }
+
+    var googleNewsTopic: String? {
+        switch self {
+        case .general: return nil
+        case .business: return "BUSINESS"
+        case .technology: return "TECHNOLOGY"
+        case .entertainment: return "ENTERTAINMENT"
+        case .health: return "HEALTH"
+        case .science: return "SCIENCE"
+        case .sports: return "SPORTS"
         }
     }
 }

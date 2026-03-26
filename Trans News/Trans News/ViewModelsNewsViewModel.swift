@@ -173,14 +173,19 @@ final class NewsViewModel {
     // MARK: - Related Articles
     
     func relatedArticles(for article: NewsArticle, limit: Int = 5) -> [NewsArticle] {
-        // Gabungkan homeArticles dan articles untuk pool yang lebih besar
-        let pool = Array(Set(homeArticles + articles))
-        
-        return pool
-            .filter { $0.title != article.title }
-            .filter { $0.category == article.category }
-            .prefix(limit)
-            .map { $0 }
+        var seen = Set<String>()
+        var pool: [NewsArticle] = []
+        for item in homeArticles + articles {
+            if seen.insert(item.id).inserted {
+                pool.append(item)
+            }
+        }
+
+        return Array(
+            pool
+                .filter { $0.id != article.id && $0.category == article.category }
+                .prefix(limit)
+        )
     }
     
     // MARK: - Bookmark

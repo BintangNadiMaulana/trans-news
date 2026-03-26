@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-enum LegalPageType {
+enum LegalPageType: Sendable {
     case terms
     case privacy
     

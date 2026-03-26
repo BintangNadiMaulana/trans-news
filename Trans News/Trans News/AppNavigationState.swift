@@ -7,6 +7,7 @@
 
 import Observation
 
+@MainActor
 @Observable
 final class AppNavigationState {
     static let shared = AppNavigationState()
@@ -16,7 +17,7 @@ final class AppNavigationState {
     private init() {}
 }
 
-struct NotificationArticlePayload: Equatable {
+struct NotificationArticlePayload: Equatable, Sendable {
     let id: String
     let title: String
     let articleDescription: String?

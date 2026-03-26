@@ -8,13 +8,13 @@
 import SwiftUI
 import WidgetKit
 
-struct TransNewsWidgetEntry: TimelineEntry {
+struct TransNewsWidgetEntry: TimelineEntry, Sendable {
     let date: Date
     let headlines: [WidgetHeadline]
     let isEnglish: Bool
 }
 
-struct WidgetHeadline: Identifiable {
+struct WidgetHeadline: Identifiable, Sendable {
     let id: String
     let title: String
     let source: String
@@ -181,7 +181,7 @@ private actor WidgetNewsService {
     }
 }
 
-private final class WidgetRSSParser: NSObject, XMLParserDelegate {
+private final class WidgetRSSParser: NSObject, XMLParserDelegate, @unchecked Sendable {
     private var headlines: [WidgetHeadline] = []
     private var currentItem: WidgetRSSItem?
     private var currentElement = ""
@@ -230,7 +230,7 @@ private final class WidgetRSSParser: NSObject, XMLParserDelegate {
     }
 }
 
-private struct WidgetRSSItem {
+private struct WidgetRSSItem: Sendable {
     var title = ""
     var source = ""
     var link = ""

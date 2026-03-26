@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct FAQItem: Identifiable {
+struct FAQItem: Identifiable, Sendable {
     let id = UUID()
     let question: String
     let answer: String

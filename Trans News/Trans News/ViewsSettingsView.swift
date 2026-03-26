@@ -6,12 +6,9 @@
 //
 
 import SwiftUI
-import SwiftData
 import UserNotifications
-import WidgetKit
 
 struct SettingsView: View {
-    @Environment(\.modelContext) private var modelContext
     @AppStorage("fontSize") private var fontSize: Double = 16
     @AppStorage("notificationsEnabled") private var notificationsEnabled = true
     @AppStorage("selectedLanguage") private var selectedLanguage = "id"
@@ -247,11 +244,10 @@ struct SettingsView: View {
     private func handleNotificationToggle(enabled: Bool) {
         if enabled {
             Task {
-                let granted = try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound])
-                if granted != true {
+                let granted = await NotificationService.shared.requestPermission()
+                if !granted {
                     showNotificationDenied = true
                 } else {
-                    NotificationService.shared.isAuthorized = true
                     NotificationService.shared.scheduleDailyDigest()
                 }
             }

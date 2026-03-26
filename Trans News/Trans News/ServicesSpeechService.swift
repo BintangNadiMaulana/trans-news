@@ -5,9 +5,10 @@
 //  Created by Bintang Nadi Maulana on 22/03/26.
 //
 
-@preconcurrency import AVFoundation
+import AVFoundation
 import Observation
 
+@MainActor
 @Observable
 final class SpeechService: NSObject {
     static let shared = SpeechService()
@@ -49,18 +50,14 @@ final class SpeechService: NSObject {
     }
 }
 
-extension SpeechService: AVSpeechSynthesizerDelegate {
+extension SpeechService: @preconcurrency AVSpeechSynthesizerDelegate {
     func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
-        Task { @MainActor in
-            isSpeaking = false
-            currentArticleID = nil
-        }
+        isSpeaking = false
+        currentArticleID = nil
     }
 
     func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didCancel utterance: AVSpeechUtterance) {
-        Task { @MainActor in
-            isSpeaking = false
-            currentArticleID = nil
-        }
+        isSpeaking = false
+        currentArticleID = nil
     }
 }
